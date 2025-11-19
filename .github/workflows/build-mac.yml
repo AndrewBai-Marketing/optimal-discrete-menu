@@ -1,0 +1,43 @@
+name: Build Mac Binary
+
+on:
+  workflow_dispatch:  # Manual trigger only
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        brew install eigen
+
+    - name: Compile ot_core.dylib (without OpenMP for compatibility)
+      run: |
+        # Find Eigen installation
+        if [ -d "/opt/homebrew/include/eigen3" ]; then
+          EIGEN_PATH="/opt/homebrew/include/eigen3"
+        elif [ -d "/usr/local/include/eigen3" ]; then
+          EIGEN_PATH="/usr/local/include/eigen3"
+        else
+          echo "Error: Could not find Eigen"
+          exit 1
+        fi
+        echo "Using Eigen at: $EIGEN_PATH"
+
+        # Compile without OpenMP (single-threaded version for Mac)
+        clang++ -O3 -shared -fPIC -std=c++17 \
+          -I"$EIGEN_PATH" \
+          -undefined dynamic_lookup \
+          ot_core.cpp -o ot_core.dylib
+
+        echo "Compilation successful!"
+        ls -lh ot_core.dylib
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ot_core-macos
+        path: ot_core.dylib

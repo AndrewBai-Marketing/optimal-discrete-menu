@@ -57,7 +57,7 @@ Each simulation runs in ~30 seconds to 5 minutes depending on your CPU.
 |-----------|----------|--------------|
 | 1 | Premium Niche (50k) | **+27.74%** |
 | 2 | Enterprise Software | **+9.43%** |
-| 3 | Streaming Platform | **+9.07%** |
+| 3 | Streaming Platform | **+13.1%** |
 | 4 | Homogeneous Baseline | +1.30% |
 
 See [docs/SIMULATION_RESULTS.md](docs/SIMULATION_RESULTS.md) or [docs/simulation_results.tex](docs/simulation_results.tex) for complete methodology and results.

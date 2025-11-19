@@ -79,10 +79,10 @@ For each consumer i:
 | Oracle (upper bound) | $39.30 | +131.2% |
 
 **Interpretation**:
-- KS's greedy approach optimizes for the 95% majority, selecting L=1 bundle
-- KS misses the profitable premium segment due to fixed single-option pricing
+- KS's greedy approach selects L=4 bundles but struggles with the small premium segment
+- Despite having 4 bundles, KS achieves limited price discrimination in this bimodal market
 - OT discovers L=2 solution: one bundle for regular consumers, one for premium
-- OT achieves 26.4% profit improvement by exploiting market segmentation
+- OT achieves 26.4% profit improvement by more effectively exploiting market segmentation
 - Advantage holds out-of-sample with minimal train/test gap
 
 ---

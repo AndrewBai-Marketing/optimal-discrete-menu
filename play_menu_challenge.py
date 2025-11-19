@@ -160,7 +160,7 @@ def get_user_menu(info):
     L = info['L']
     features = info['features']
 
-    print(f"\n📋 DESIGN YOUR MENU")
+    print(f"\nDESIGN YOUR MENU")
     print(f"You'll create {L} bundles. For each bundle:")
     print(f"  1. Choose which features to include")
     print(f"  2. Set a price")
@@ -194,12 +194,12 @@ def get_user_menu(info):
 
                     # Show what they selected
                     selected_features = [features[s] for s in selected]
-                    print(f"  ✓ Bundle includes: {', '.join(selected_features)}")
+                    print(f"  > Bundle includes: {', '.join(selected_features)}")
                     break
                 else:
-                    print(f"  ✗ Invalid feature numbers. Use 1-{d}")
+                    print(f"  X Invalid feature numbers. Use 1-{d}")
             except:
-                print(f"  ✗ Invalid input. Try again (e.g., '1,2,4')")
+                print(f"  X Invalid input. Try again (e.g., '1,2,4')")
 
         # Get price
         while True:
@@ -207,12 +207,12 @@ def get_user_menu(info):
                 price = float(input(f"Set price for this bundle: $"))
                 if price >= 0:
                     prices.append(price)
-                    print(f"  ✓ Price set to ${price:.2f}")
+                    print(f"  > Price set to ${price:.2f}")
                     break
                 else:
-                    print("  ✗ Price must be non-negative")
+                    print("  X Price must be non-negative")
             except:
-                print("  ✗ Invalid price. Enter a number (e.g., 50)")
+                print("  X Invalid price. Enter a number (e.g., 50)")
 
     return np.array(bundles), np.array(prices)
 
@@ -331,11 +331,11 @@ def show_results(user_profit, user_participation, ot_profit, ot_bundles, ot_pric
     print(f"\n{'-'*70}")
 
     if gap < 0:
-        print(f"🏆 INCREDIBLE! You beat OT by {abs(gap):.1f}%!")
-        print("   (This shouldn't happen - you found a bug or got very lucky!)")
+        print(f"*** INCREDIBLE! You beat OT by {abs(gap):.1f}%!")
+        print("    (This shouldn't happen - you found a bug or got very lucky!)")
     elif gap < 2:
-        print(f"🎯 OUTSTANDING! Within {gap:.1f}% of optimal!")
-        print("   You have excellent intuition for menu design!")
+        print(f"*** OUTSTANDING! Within {gap:.1f}% of optimal!")
+        print("    You have excellent intuition for menu design!")
     elif gap < 10:
         print(f"VERY GOOD! OT profit is {gap:.1f}% higher")
     elif gap < 25:
@@ -364,7 +364,7 @@ def main():
         try:
             choice = int(input("\nScenario (0-4): "))
             if choice == 0:
-                print("\nThanks for playing! 🎯")
+                print("\nThanks for playing!")
                 break
             if choice not in SCENARIOS:
                 print("Invalid choice. Try again.")
@@ -396,18 +396,18 @@ def main():
         user_profit, user_participation = evaluate_menu(wtps_test, user_bundles, user_prices)
 
         # Run OT on TRAIN set
-        print(f"\n⏳ Running OT algorithm on training data...")
+        print(f"\nRunning OT algorithm on training data...")
         wtp_cols_train = [c for c in df_train.columns if c.startswith('wtp_')]
         wtps_train = df_train[wtp_cols_train].values
 
         start = time.time()
         ot_profit_train, ot_bundles, ot_prices = run_ot(wtps_train, info['L'])
         elapsed = time.time() - start
-        print(f"✓ OT training completed in {elapsed:.1f}s")
+        print(f"> OT training completed in {elapsed:.1f}s")
 
         # Evaluate OT on TEST set
         ot_profit, _ = evaluate_menu(wtps_test, ot_bundles, ot_prices)
-        print(f"✓ Evaluating on test set...")
+        print(f"> Evaluating on test set...")
 
         # Show results
         show_results(user_profit, user_participation, ot_profit, ot_bundles, ot_prices, info)
@@ -415,7 +415,7 @@ def main():
         # Ask to continue
         again = input("\nTry another scenario? (y/n): ")
         if again.lower() != 'y':
-            print("\nThanks for playing! 🎯")
+            print("\nThanks for playing!")
             break
 
 if __name__ == "__main__":

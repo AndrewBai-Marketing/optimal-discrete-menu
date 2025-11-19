@@ -157,19 +157,21 @@ def show_training_data_summary(df_train, features, scenario_name):
 def get_user_menu(info):
     """Interactive menu design"""
     d = info['d']
-    L = info['L']
+    L_max = info['L']
     features = info['features']
 
     print(f"\nDESIGN YOUR MENU")
-    print(f"You'll create {L} bundles. For each bundle:")
+    print(f"You can create up to {L_max} bundles.")
+    print(f"For each bundle:")
     print(f"  1. Choose which features to include")
     print(f"  2. Set a price")
+    print(f"  (Type 'done' when finished adding bundles)")
 
     bundles = []
     prices = []
 
-    for i in range(L):
-        print(f"\n--- Bundle {i+1} of {L} ---")
+    for i in range(L_max):
+        print(f"\n--- Bundle {i+1} (or type 'done' to finish) ---")
 
         # Show features with numbers
         for j, feat in enumerate(features):
@@ -177,7 +179,14 @@ def get_user_menu(info):
 
         # Get bundle composition
         while True:
-            response = input(f"\nEnter feature numbers to include (e.g., '1,2,4' or '1 2 4'): ").strip()
+            response = input(f"\nEnter feature numbers to include (e.g., '1,2,4' or 'done'): ").strip()
+
+            if response.lower() == 'done':
+                if len(bundles) == 0:
+                    print("  X You must create at least 1 bundle")
+                    continue
+                print(f"\n> Finished with {len(bundles)} bundle(s)")
+                return np.array(bundles), np.array(prices)
 
             try:
                 # Parse input
@@ -187,7 +196,7 @@ def get_user_menu(info):
                     selected = [int(x.strip()) - 1 for x in response.split()]
 
                 # Validate
-                if all(0 <= s < d for s in selected):
+                if all(0 <= s < d for s in selected) and len(selected) > 0:
                     bundle = np.zeros(d, dtype=int)
                     bundle[selected] = 1
                     bundles.append(bundle)
@@ -199,7 +208,7 @@ def get_user_menu(info):
                 else:
                     print(f"  X Invalid feature numbers. Use 1-{d}")
             except:
-                print(f"  X Invalid input. Try again (e.g., '1,2,4')")
+                print(f"  X Invalid input. Try again (e.g., '1,2,4' or 'done')")
 
         # Get price
         while True:
@@ -214,6 +223,7 @@ def get_user_menu(info):
             except:
                 print("  X Invalid price. Enter a number (e.g., 50)")
 
+    print(f"\n> Reached maximum of {L_max} bundles")
     return np.array(bundles), np.array(prices)
 
 def evaluate_menu(wtps, bundles, prices):
@@ -388,6 +398,7 @@ def main():
 
         # Get user's menu design
         user_bundles, user_prices = get_user_menu(info)
+        user_L = len(user_bundles)
 
         # Evaluate user's menu on TEST set
         wtp_cols = [c for c in df_test.columns if c.startswith('wtp_')]
@@ -395,13 +406,13 @@ def main():
 
         user_profit, user_participation = evaluate_menu(wtps_test, user_bundles, user_prices)
 
-        # Run OT on TRAIN set
-        print(f"\nRunning OT algorithm on training data...")
+        # Run OT on TRAIN set with same L as user
+        print(f"\nRunning OT algorithm on training data with L={user_L}...")
         wtp_cols_train = [c for c in df_train.columns if c.startswith('wtp_')]
         wtps_train = df_train[wtp_cols_train].values
 
         start = time.time()
-        ot_profit_train, ot_bundles, ot_prices = run_ot(wtps_train, info['L'])
+        ot_profit_train, ot_bundles, ot_prices = run_ot(wtps_train, user_L)
         elapsed = time.time() - start
         print(f"> OT training completed in {elapsed:.1f}s")
 
